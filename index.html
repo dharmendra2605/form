@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Registration Form</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .preview-image {
+            max-width: 200px;
+            max-height: 200px;
+            object-fit: cover;
+        }
+        
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 0.75rem;
+            margin: 0.25rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+        }
+        
+        .tag-remove {
+            margin-left: 0.5rem;
+            cursor: pointer;
+            font-weight: bold;
+            opacity: 0.7;
+        }
+        
+        .tag-remove:hover {
+            opacity: 1;
+        }
+        
+        .suggestions {
+            position: absolute;
+            z-index: 10;
+            width: 100%;
+            max-height: 200px;
+            overflow-y: auto;
+            border-radius: 0.5rem;
+            margin-top: 0.25rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .suggestion-item {
+            padding: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        /* Light theme (default) */
+        @media (prefers-color-scheme: light) {
+            .tag {
+                background-color: #e0e7ff;
+                color: #3730a3;
+            }
+            .suggestions {
+                background-color: white;
+                border: 1px solid #d1d5db;
+            }
+            .suggestion-item:hover {
+                background-color: #f3f4f6;
+            }
+        }
+        
+        /* Dark theme */
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: linear-gradient(to bottom right, #1e293b, #0f172a);
+            }
+            .bg-white {
+                background-color: #1e293b !important;
+            }
+            h1, h2 {
+                color: #e0e7ff !important;
+            }
+            label, p {
+                color: #cbd5e1 !important;
+            }
+            input, select, textarea {
+                background-color: #0f172a !important;
+                border-color: #475569 !important;
+                color: #e2e8f0 !important;
+            }
+            input:focus, select:focus, textarea:focus {
+                border-color: #818cf8 !important;
+            }
+            .tag {
+                background-color: #312e81;
+                color: #c7d2fe;
+            }
+            .suggestions {
+                background-color: #0f172a;
+                border: 1px solid #475569;
+            }
+            .suggestion-item:hover {
+                background-color: #1e293b;
+            }
+            .bg-gray-50 {
+                background-color: #0f172a !important;
+            }
+            #jsonData {
+                color: #e2e8f0 !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen py-8 px-4">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-2xl shadow-2xl p-8 mb-6">
+            <h1 class="text-4xl font-bold text-indigo-600 mb-2 text-center">Community Registration</h1>
+            <p class="text-gray-600 text-center mb-8">Join our community today!</p>
+            
+            <form id="registrationForm" class="space-y-6">
+                <!-- Personal Information Section -->
+                <div class="border-b pb-6">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Personal Information</h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Full Name <span class="text-red-500">*</span>
+                            </label>
+                            <input type="text" id="name" name="name" required autocomplete="name"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Date of Birth
+                            </label>
+                            <input type="date" id="dob" name="dob" autocomplete="bday"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Gender
+                            </label>
+                            <select id="gender" name="gender" autocomplete="sex"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                                <option value="">Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="non-binary">Non-Binary</option>
+                                <option value="prefer-not-to-say">Prefer Not to Say</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Contact Number <span class="text-red-500">*</span>
+                            </label>
+                            <input type="tel" id="contact" name="contact" required autocomplete="tel"
+                                pattern="[0-9+\-\s()]+"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Address Section -->
+                <div class="border-b pb-6">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Address Details</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Current Address
+                            </label>
+                            <textarea id="currentAddress" name="currentAddress" rows="2" autocomplete="street-address"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"></textarea>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <input type="checkbox" id="sameAddress" 
+                                class="w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                            <label for="sameAddress" class="ml-2 text-sm text-gray-700">
+                                Permanent address same as current address
+                            </label>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Permanent Address
+                            </label>
+                            <textarea id="permanentAddress" name="permanentAddress" rows="2"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Education & Professional Section -->
+                <div class="border-b pb-6">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Education & Professional</h2>
+                    
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Highest Education
+                            </label>
+                            <select id="education" name="education"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                                <option value="">Select Education Level</option>
+                                <option value="high-school">High School</option>
+                                <option value="associate">Associate Degree</option>
+                                <option value="bachelor">Bachelor's Degree</option>
+                                <option value="master">Master's Degree</option>
+                                <option value="phd">Ph.D./Doctorate</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Field of Study
+                            </label>
+                            <input type="text" id="fieldOfStudy" name="fieldOfStudy"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Occupation
+                            </label>
+                            <input type="text" id="occupation" name="occupation" autocomplete="organization-title"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Years of Experience
+                            </label>
+                            <input type="number" id="experience" name="experience" min="0" max="70"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skills & Interests Section -->
+                <div class="border-b pb-6">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">Skills & Interests</h2>
+                    
+                    <div class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Skills
+                            </label>
+                            <div class="relative">
+                                <input type="text" id="skillsInput" 
+                                    placeholder="Type to search or add custom skills..."
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                                <div id="skillsSuggestions" class="suggestions hidden"></div>
+                            </div>
+                            <div id="selectedSkills" class="mt-3 min-h-[40px] flex flex-wrap items-start"></div>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Interests
+                            </label>
+                            <div class="relative">
+                                <input type="text" id="interestsInput" 
+                                    placeholder="Type to search or add custom interests..."
+                                    class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                                <div id="interestsSuggestions" class="suggestions hidden"></div>
+                            </div>
+                            <div id="selectedInterests" class="mt-3 min-h-[40px] flex flex-wrap items-start"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Community Information Section -->
+                <div class="border-b pb-6">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-4">About You</h2>
+                    
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Why do you want to join our community?
+                            </label>
+                            <textarea id="reason" name="reason" rows="3"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                                placeholder="Tell us what motivates you to join..."></textarea>
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Short Bio
+                            </label>
+                            <textarea id="bio" name="bio" rows="4"
+                                class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                                placeholder="Tell us about yourself..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="flex flex-wrap gap-4 justify-center pt-4">
+                    <button type="submit"
+                        class="px-8 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition shadow-lg transform hover:scale-105 font-semibold">
+                        Submit Registration
+                    </button>
+                    <button type="button" id="resetBtn"
+                        class="px-8 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition shadow-lg transform hover:scale-105 font-semibold">
+                        Reset Form
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- JSON Output Section (Hidden initially) -->
+        <div id="jsonOutput" class="bg-white rounded-2xl shadow-2xl p-8 hidden">
+            <h2 class="text-3xl font-bold text-green-600 mb-4 text-center">✓ Registration Successful!</h2>
+            <p class="text-gray-600 mb-4 text-center">Your registration data has been generated. You can copy or download it below.</p>
+            
+            <div class="bg-gray-50 rounded-lg p-4 mb-4">
+                <pre id="jsonData" class="text-sm overflow-x-auto whitespace-pre-wrap break-words"></pre>
+            </div>
+            
+            <div class="flex flex-wrap gap-4 justify-center">
+                <button id="copyBtn"
+                    class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-md">
+                    Copy JSON
+                </button>
+                <button id="downloadBtn"
+                    class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition shadow-md">
+                    Download JSON
+                </button>
+                <button id="newRegBtn"
+                    class="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition shadow-md">
+                    New Registration
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('registrationForm');
+        const jsonOutputDiv = document.getElementById('jsonOutput');
+        const jsonDataPre = document.getElementById('jsonData');
+        const sameAddressCheckbox = document.getElementById('sameAddress');
+        const currentAddressInput = document.getElementById('currentAddress');
+        const permanentAddressInput = document.getElementById('permanentAddress');
+
+        // Predefined skills and interests
+        const predefinedSkills = [
+            'Storytelling', 'Public Relations', 'Event Planning', 'Fundraising',
+            'teaching', 'Mentoring', 'Coaching', 'Leadership',
+            'cooking', 'two-weeler driving', 'four-weeler driving', 'first aid',
+            'gardening', 'carpentry', 'plumbing', 'electrical work',
+            'gaming', 'streaming', 'video production', 'audio editing',
+            'research', 'data entry', 'data visualization',
+            'active listening', 'conflict resolution', 'negotiation',
+            'time management', 'organization', 'multitasking',
+            'problem-solving', 'critical thinking', 'creativity',
+            'acting', 'directing', 'scriptwriting',
+            'singing', 'anchoring', 'radio hosting',
+            'dancing', 'choreography', 'fitness training',
+            'Data Analysis', 'Machine Learning', 'Deep Learning', 'AI', 'Data Science',
+            'UI/UX Design', 'Graphic Design', 'Adobe Photoshop', 'Adobe Illustrator', 'Figma',
+            'Content Writing', 'Copywriting', 'Technical Writing', 'Creative Writing',
+            'Project Management', 'Agile', 'Scrum', 'Leadership', 'Team Management',
+            'Digital Marketing',
+            'Public Speaking', 'Communication', 'Presentation Skills',
+            'Photography', 'Video Editing', 'Animation', '3D Modeling',
+            'Cybersecurity', 'Networking', 'System Administration',
+            'Mobile Development', 'Android Development', 'iOS Development',
+            'Game Development', 'Unity', 'Unreal Engine',
+            'Blockchain', 'Cryptocurrency', 'Smart Contracts','Spreadsheet Analysis'
+        ];
+
+        const predefinedInterests = [
+            'Technology', 'Programming', 'Web Development', 'Mobile Apps', 'Artificial Intelligence',
+            'Sports', 'Football', 'Basketball', 'Cricket', 'Tennis', 'Swimming', 'Running',
+            'Music', 'Playing Instruments', 'Singing', 'Music Production', 'Classical Music', 'Rock', 'Jazz',
+            'Art', 'Painting', 'Drawing', 'Sculpture', 'Digital Art',
+            'Reading', 'Fiction', 'Non-Fiction', 'Science Fiction', 'Mystery', 'Biography',
+            'Writing', 'Poetry', 'Blogging', 'Journaling',
+            'Travel', 'Adventure', 'Backpacking', 'Road Trips', 'Cultural Exploration',
+            'Cooking', 'Baking', 'International Cuisine', 'Food Photography',
+            'Gaming', 'Video Games', 'Board Games', 'Esports', 'Game Design',
+            'Fitness', 'Gym', 'Yoga', 'Meditation', 'Martial Arts', 'CrossFit',
+            'Photography', 'Nature Photography', 'Portrait Photography', 'Street Photography',
+            'Volunteering', 'Social Work', 'Community Service', 'NGO Work',
+            'Environment', 'Sustainability', 'Conservation', 'Climate Action',
+            'Science', 'Physics', 'Chemistry', 'Biology', 'Astronomy', 'Space Exploration',
+            'Fashion', 'Fashion Design', 'Styling', 'Sustainable Fashion',
+            'Film & Cinema', 'Movies', 'Filmmaking', 'Film Criticism', 'Documentary',
+            'Business', 'Startups', 'Investing', 'Stock Market', 'Cryptocurrency',
+            'Entrepreneurship', 'Innovation', 'Product Development',
+            'History', 'Politics', 'Philosophy', 'Psychology',
+            'Gardening', 'Indoor Plants', 'Organic Farming',
+            'DIY Projects', 'Crafts', 'Woodworking', 'Home Improvement',
+            'Pets', 'Dogs', 'Cats', 'Animal Welfare'
+        ];
+
+        // Selected items
+        let selectedSkills = [];
+        let selectedInterests = [];
+
+        // Initialize autocomplete for skills
+        const skillsInput = document.getElementById('skillsInput');
+        const skillsSuggestions = document.getElementById('skillsSuggestions');
+        const selectedSkillsDiv = document.getElementById('selectedSkills');
+
+        // Initialize autocomplete for interests
+        const interestsInput = document.getElementById('interestsInput');
+        const interestsSuggestions = document.getElementById('interestsSuggestions');
+        const selectedInterestsDiv = document.getElementById('selectedInterests');
+
+        // Autocomplete functionality
+        function setupAutocomplete(input, suggestionsDiv, predefinedList, selectedArray, selectedDiv) {
+            input.addEventListener('input', function() {
+                const value = this.value.trim().toLowerCase();
+                suggestionsDiv.innerHTML = '';
+                
+                if (value.length === 0) {
+                    suggestionsDiv.classList.add('hidden');
+                    return;
+                }
+
+                const matches = predefinedList.filter(item => 
+                    item.toLowerCase().includes(value) && 
+                    !selectedArray.includes(item)
+                ).slice(0, 10);
+
+                if (matches.length > 0) {
+                    matches.forEach(match => {
+                        const div = document.createElement('div');
+                        div.className = 'suggestion-item';
+                        div.textContent = match;
+                        div.addEventListener('click', () => {
+                            addItem(match, selectedArray, selectedDiv);
+                            input.value = '';
+                            suggestionsDiv.classList.add('hidden');
+                        });
+                        suggestionsDiv.appendChild(div);
+                    });
+                    suggestionsDiv.classList.remove('hidden');
+                } else {
+                    suggestionsDiv.classList.add('hidden');
+                }
+            });
+
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const value = this.value.trim();
+                    if (value && !selectedArray.includes(value)) {
+                        addItem(value, selectedArray, selectedDiv);
+                        this.value = '';
+                        suggestionsDiv.classList.add('hidden');
+                    }
+                }
+            });
+
+            // Close suggestions when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!input.contains(e.target) && !suggestionsDiv.contains(e.target)) {
+                    suggestionsDiv.classList.add('hidden');
+                }
+            });
+        }
+
+        function addItem(item, selectedArray, selectedDiv) {
+            if (!selectedArray.includes(item)) {
+                selectedArray.push(item);
+                renderTags(selectedArray, selectedDiv);
+            }
+        }
+
+        function removeItem(item, selectedArray, selectedDiv) {
+            const index = selectedArray.indexOf(item);
+            if (index > -1) {
+                selectedArray.splice(index, 1);
+                renderTags(selectedArray, selectedDiv);
+            }
+        }
+
+        function renderTags(array, container) {
+            container.innerHTML = '';
+            array.forEach(item => {
+                const tag = document.createElement('span');
+                tag.className = 'tag';
+                tag.innerHTML = `${item} <span class="tag-remove" data-item="${item}">×</span>`;
+                
+                tag.querySelector('.tag-remove').addEventListener('click', function() {
+                    removeItem(this.dataset.item, array, container);
+                });
+                
+                container.appendChild(tag);
+            });
+        }
+
+        // Setup both autocompletes
+        setupAutocomplete(skillsInput, skillsSuggestions, predefinedSkills, selectedSkills, selectedSkillsDiv);
+        setupAutocomplete(interestsInput, interestsSuggestions, predefinedInterests, selectedInterests, selectedInterestsDiv);
+
+        // Same address checkbox
+        sameAddressCheckbox.addEventListener('change', function() {
+            if (this.checked) {
+                permanentAddressInput.value = currentAddressInput.value;
+                permanentAddressInput.disabled = true;
+            } else {
+                permanentAddressInput.disabled = false;
+            }
+        });
+
+        currentAddressInput.addEventListener('input', function() {
+            if (sameAddressCheckbox.checked) {
+                permanentAddressInput.value = this.value;
+            }
+        });
+
+        // Form submission
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            // Collect form data
+            const formData = {
+                personalInfo: {
+                    name: document.getElementById('name').value,
+                    dateOfBirth: document.getElementById('dob').value || null,
+                    gender: document.getElementById('gender').value || null,
+                    contactNumber: document.getElementById('contact').value
+                },
+                address: {
+                    current: document.getElementById('currentAddress').value || null,
+                    permanent: document.getElementById('permanentAddress').value || null
+                },
+                education: {
+                    highestEducation: document.getElementById('education').value || null,
+                    fieldOfStudy: document.getElementById('fieldOfStudy').value || null,
+                    occupation: document.getElementById('occupation').value || null,
+                    yearsOfExperience: document.getElementById('experience').value ? parseInt(document.getElementById('experience').value) : null
+                },
+                skills: selectedSkills,
+                interests: selectedInterests,
+                community: {
+                    reasonToJoin: document.getElementById('reason').value || null,
+                    bio: document.getElementById('bio').value || null
+                },
+                registrationDate: new Date().toISOString()
+            };
+
+            // Display JSON
+            const jsonString = JSON.stringify(formData, null, 2);
+            jsonDataPre.textContent = jsonString;
+            
+            // Hide form and show output
+            form.parentElement.classList.add('hidden');
+            jsonOutputDiv.classList.remove('hidden');
+            
+            // Scroll to output
+            jsonOutputDiv.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        // Copy JSON button
+        document.getElementById('copyBtn').addEventListener('click', function() {
+            const jsonText = jsonDataPre.textContent;
+            navigator.clipboard.writeText(jsonText).then(function() {
+                const btn = document.getElementById('copyBtn');
+                const originalText = btn.textContent;
+                btn.textContent = '✓ Copied!';
+                btn.classList.add('bg-green-600');
+                setTimeout(function() {
+                    btn.textContent = originalText;
+                    btn.classList.remove('bg-green-600');
+                }, 2000);
+            });
+        });
+
+        // Download JSON button
+        document.getElementById('downloadBtn').addEventListener('click', function() {
+            const jsonText = jsonDataPre.textContent;
+            const blob = new Blob([jsonText], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'registration_' + new Date().getTime() + '.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+
+        // New Registration button
+        document.getElementById('newRegBtn').addEventListener('click', function() {
+            form.reset();
+            permanentAddressInput.disabled = false;
+            selectedSkills = [];
+            selectedInterests = [];
+            renderTags(selectedSkills, selectedSkillsDiv);
+            renderTags(selectedInterests, selectedInterestsDiv);
+            form.parentElement.classList.remove('hidden');
+            jsonOutputDiv.classList.add('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Reset button
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            if (confirm('Are you sure you want to reset the form? All data will be lost.')) {
+                form.reset();
+                permanentAddressInput.disabled = false;
+                selectedSkills = [];
+                selectedInterests = [];
+                renderTags(selectedSkills, selectedSkillsDiv);
+                renderTags(selectedInterests, selectedInterestsDiv);
+            }
+        });
+    </script>
+</body>
+</html>
